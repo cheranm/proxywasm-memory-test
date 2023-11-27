@@ -37,14 +37,57 @@ When running tests for 5 iterations and looking to the memory usage inside docke
 after each iteration, we found that the memory increased, but after finishing the test, it be never released.
 
 The results show that the RES memory is increasing and never decreased even after sending requests stopped.
-Also it shows that in some cases, when a new iteration starts, the memory gets increased.
+Also, it shows that in some cases, when a new iteration starts, the memory gets increased.
 
+```json
+{
+ "allocated": "15867936",
+ "heap_size": "31457280",
+ "pageheap_unmapped": "0",
+ "pageheap_free": "4661248",
+ "total_thread_cache": "10068560",
+ "total_physical_bytes": "35057510"
+}
+```
 ![1](fig/1.png)
 
+---
+```json
+{
+ "allocated": "16991256",
+ "heap_size": "31457280",
+ "pageheap_unmapped": "0",
+ "pageheap_free": "3252224",
+ "total_thread_cache": "10214792",
+ "total_physical_bytes": "35069846"
+}
+```
 ![2](fig/2.png)
 
+---
+
+```json
+{
+ "allocated": "17154592",
+ "heap_size": "31457280",
+ "pageheap_unmapped": "0",
+ "pageheap_free": "2940928",
+ "total_thread_cache": "10404576",
+ "total_physical_bytes": "35071334"
+}
+```
 ![3](fig/3.png)
 
-![4](fig/4.png)
+---
 
-![5](fig/5.png)
+```json
+{
+ "allocated": "17154904",
+ "heap_size": "31457280",
+ "pageheap_unmapped": "0",
+ "pageheap_free": "2891776",
+ "total_thread_cache": "10429320",
+ "total_physical_bytes": "35071622"
+}
+```
+![4](fig/4.png)
