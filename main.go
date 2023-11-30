@@ -6,6 +6,7 @@ package main
 import (
 	"bytes"
 	"strconv"
+	"sync"
 
 	"github.com/tetratelabs/proxy-wasm-go-sdk/proxywasm"
 	"github.com/tetratelabs/proxy-wasm-go-sdk/proxywasm/types"
@@ -33,6 +34,8 @@ type plugin struct {
 	size int
 }
 
+var bufPool sync.Pool
+
 // OnPluginStart Override types.DefaultPluginContext.
 func (h *plugin) OnPluginStart(_ int) types.OnPluginStartStatus {
 	data, err := proxywasm.GetPluginConfiguration()
@@ -44,6 +47,13 @@ func (h *plugin) OnPluginStart(_ int) types.OnPluginStartStatus {
 		panic(err)
 	}
 	h.size = sz
+
+	bufPool = sync.Pool{
+		New: func() interface{} {
+			return make([]byte, sz)
+		},
+	}
+
 	return types.OnPluginStartStatusOK
 }
 
@@ -59,8 +69,13 @@ type tester struct {
 }
 
 func (c *tester) OnHttpRequestHeaders(numHeaders int, endOfStream bool) types.Action {
-	b := make([]byte, c.size)
+	b := bufPool.Get().([]byte)
 	proxywasm.LogInfof("alloc success, point address: %p", b)
 	proxywasm.SendHttpResponse(200, nil, nil, -1)
+
+	// Re-slice to maximum capacity and return it  for re-use. This is important to guarantee that
+	// all calls to Get() will return a buffer of length c.size.
+	bufPool.Put(b[:c.size])
+
 	return types.ActionContinue
 }
